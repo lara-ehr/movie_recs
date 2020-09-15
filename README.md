@@ -17,7 +17,8 @@ potential future work:
 development environment: 100K dataset
 deployment environment: 10M dataset
 
-### 1. database (postgres)
+### 1. Database Creation (Postgres)
+
 INPUT:
 - movies.csv - MovieID, Title, Genre
 - ratings.csv - UserID, MovieID, Rating, (Timestamp)
@@ -35,7 +36,8 @@ OUTPUT:
 - adjusting paths as needed
 
 ### 2. Machine Learning (NMF model/collaborative filtering)
-- INPUT:-
+
+INPUT:-
 - table "ratings"
 - user input from web application: dictionary of the IDs of the movies the user had to rate and their respective ratings by the user which is an integer between 0 and 5
 
@@ -49,14 +51,15 @@ OUTPUT:
 - take user query and transform it with model to create a sorted list with x most recommended movie IDs
 - transform list of movie IDs to list with movie name strings
 
-### 3. web application (flask)
+### 3. Web Application (Flask)
+
 INPUT:
 - sorted list of five most fitting movies for recommendations
 - TBD - refine as needed with CSS/JS/HTML
 
 (MODEL-VIEW-CONTROLLER structure)
 
-PROJECT STRUCTURE:
+### 4. Project Structure
 - DIR flask-app
     - DIR templates
       - index.html (landing page for the user where they can enter their ratings for five movies, create ouput: dictionary of movieIDs and respective ratings)
