@@ -1,4 +1,4 @@
-# movie_recs
+# Movie Recommender System
 Provides personalised movie recommendations.
 
 ## USER STORY
@@ -14,10 +14,10 @@ potential future work:
 
 ## TO DO
 
-development environment: 100K dataset
-deployment environment: 10M dataset
+- development environment: 100K dataset
+- deployment environment: 10M dataset
 
-### 1. Database Creation (Postgres)
+#### 1. Database Creation (Postgres)
 
 INPUT:
 - movies.csv - MovieID, Title, Genre
@@ -35,7 +35,7 @@ OUTPUT:
 - Script for getting data into database (already done by Lara)
 - adjusting paths as needed
 
-### 2. Machine Learning (NMF model/collaborative filtering)
+#### 2. Machine Learning (NMF model/collaborative filtering)
 
 INPUT:-
 - table "ratings"
@@ -51,15 +51,16 @@ OUTPUT:
 - take user query and transform it with model to create a sorted list with x most recommended movie IDs
 - transform list of movie IDs to list with movie name strings
 
-### 3. Web Application (Flask)
+#### 3. Web Application (Flask)
 
 INPUT:
 - sorted list of five most fitting movies for recommendations
 - TBD - refine as needed with CSS/JS/HTML
 
+#### 4. Project Structure
+
 (MODEL-VIEW-CONTROLLER structure)
 
-### 4. Project Structure
 - DIR flask-app
     - DIR templates
       - index.html (landing page for the user where they can enter their ratings for five movies, create ouput: dictionary of movieIDs and respective ratings)
@@ -69,4 +70,5 @@ INPUT:
     - recommender.py (- get input data, imputation, ML model, create output)
 
 ## Equally important: TO NOT DO!
+
 - anything that's no fun!
