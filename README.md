@@ -1,7 +1,7 @@
 # movie_recs
 Provides personalised movie recommendations.
 
-# TO DO
+## TO DO
 
 
-# TO NOT DO!
+## Equally important: TO NOT DO!
