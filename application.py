@@ -12,10 +12,17 @@ def hello():
 
 @app.route('/recommendations')  # python decorator modifies the function that is defined on the next line
 def recommender():
-    ratings = dict(request.args)
+    user_query = dict(request.args)
+    user_query_placeholder = {
+            '99': '2',
+            '4599': '4',
+            '2982': '4',
+            '3134': '5',
+            '5456': '0',
+            }
     # THIS WE NEED TO BUILD OURSELVES NOW:
-    recommendations = rec.calculate_best_movies(ratings)
-    return render_template('recommendations.html', result_html=ratings.values())
+    MOVIE_PREDICTIONS = rec.predict_movies(user_query_placeholder)
+    return render_template('recommendations.html', result_html=user_query_placeholder.values())
     # passing the back-end python variable to the fron-end (HTML), i. e. the RESPONSE
 
 

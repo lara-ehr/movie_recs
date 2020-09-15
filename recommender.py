@@ -21,17 +21,6 @@ def get_postgres_data():
     return df_ratings
 
 
-def get_user_input():
-    query = {
-            '99': '2',
-            '4599': '4',
-            '2982': '4',
-            '3134': '5',
-            '5456': '0',
-            }
-    return query
-
-
 def create_matrix(df_ratings):
     matrix = df_ratings.set_index(['userId', 'movieId'])['rating'].unstack(0).T
     return matrix
@@ -51,31 +40,22 @@ def create_nmf_model(matrix, components, max_iterations):
     model.fit(matrix)
     movie_genre_matrix = model.components_
     user_genre_matrix = model.transform(matrix)
-
-    print(model.reconstruction_err_)
-
+    print(f'The reconstruction error is: {model.reconstruction_err_}')
     reconstructed_matrix = np.dot(user_genre_matrix, movie_genre_matrix)
-    print(reconstructed_matrix)
     return reconstructed_matrix
 
 
-def predict_movies(user_query, reconstructed_matrix):
-    # prediction = model.transform(query)
+def predict_movies(user_query):
+    df_ratings = get_postgres_data()
+    matrix = create_matrix(df_ratings)
+    matrix_imputed = imputation(matrix)
+    components = 2
+    max_iterations = 900
+    matrix_reconstructed = create_nmf_model(matrix_imputed, components, max_iterations)
+    # prediction = model.transform(user_query)
     # return prediction
     ...
 
 
 def deep_recommend():
     ...
-
-
-# HYPERPARAMETER OPTIMIZATION
-COMPONENTS = 2
-MAX_ITERATIONS = 900
-
-DF_RATINGS = get_postgres_data()
-USER_QUERY = get_user_input()
-MATRIX = create_matrix(DF_RATINGS)
-MATRIX_IMPUTED = imputation(MATRIX)
-MATRIX_RECONSTRUCTED = create_nmf_model(MATRIX_IMPUTED, COMPONENTS, MAX_ITERATIONS)
-MOVIE_PREDICTIONS = predict_movies(USER_QUERY, MATRIX_RECONSTRUCTED)
