@@ -29,6 +29,7 @@ OUTPUT:
 - database "movieratings"
 - three tables (movies, ratings, links)
 
+To Do:
 - EDA
 - Basic Data Wrangling
 . Normalization of each user's ratings
@@ -37,13 +38,14 @@ OUTPUT:
 
 #### 2. Machine Learning (NMF model/collaborative filtering)
 
-INPUT:-
+INPUT:
 - table "ratings"
 - user input from web application: dictionary of the IDs of the movies the user had to rate and their respective ratings by the user which is an integer between 0 and 5
 
 OUTPUT:
 - sorted list of five most fitting movies for recommendations
 
+To Do:
 - create a crossover matrix of movie_IDs, user_IDs and ratings
 - Imputation of NaNs with some sort of average/median value of the dataset
 - fit model (Q, P, dotproduct)
@@ -55,6 +57,8 @@ OUTPUT:
 
 INPUT:
 - sorted list of five most fitting movies for recommendations
+
+To Do:
 - TBD - refine as needed with CSS/JS/HTML
 
 #### 4. Project Structure
