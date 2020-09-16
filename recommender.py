@@ -23,6 +23,12 @@ import psycopg2
 
 from credentials import *
 
+CONN = f'postgres://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}'
+
+ratings_query = '''SELECT * FROM ratings;
+'''
+
+
 def get_postgres_data():
     """
     reads in movie ratings data for all users using the postgres database
@@ -30,7 +36,12 @@ def get_postgres_data():
     Parameters: -
     Returns: dataframe with movie IDs, ratings, user IDs
     """
-    df_ratings = pd.read_csv('placeholder/ratings.csv')
+    engine = create_engine(CONN, encoding = 'latin1', echo= False)
+    df_ratings_proxy = engine.execute(ratings_query)
+    df_ratings = pd.DataFrame(df_ratings_proxy.fetchall())
+    df_ratings.columns = ['index', 'userid', 'movieid', 'rating', 'demeaned']
+    df_ratings = df_ratings.drop('index', axis=1)
+    
     return df_ratings
 
 
