@@ -15,12 +15,13 @@ import pandas as pd
 import numpy as np
 from sklearn.decomposition import NMF
 
+import os
+
 import sqlalchemy
 from sqlalchemy import create_engine
 import psycopg2
 
-
-
+from credentials import *
 
 def get_postgres_data():
     """
@@ -72,8 +73,8 @@ def create_nmf_model(matrix, components, max_iterations):
     movie_genre_matrix = model.components_
     user_genre_matrix = model.transform(matrix)
     print(f'The reconstruction error is: {model.reconstruction_err_}')
-    reconstructed_matrix = np.dot(user_genre_matrix, movie_genre_matrix)
-    return model
+    # reconstructed_matrix = np.dot(user_genre_matrix, movie_genre_matrix)
+    return model, movie_genre_matrix
 
 
 def create_model():
@@ -85,7 +86,7 @@ def create_model():
     """
     components = 2
     max_iterations = 900
-    nan_filling = 3
+    nan_filling = 0
     df_ratings = get_postgres_data()
     matrix = create_matrix(df_ratings)
     matrix_imputed = imputation(matrix, nan_filling)
@@ -93,15 +94,26 @@ def create_model():
     return model
 
 
-def create_prediction(model, user_query):
+def create_prediction(user_query, model, movie_genre_matrix):
     """
     takes in user query and uses model to create prediction
 
     Parameters: earlier created NMF model
     user query as dictionary with five movie IDs and user's rating
     """
-    prediction = model.transform(user_query)
+    prediction_pre = model.transform(user_query)
+    prediction = np.dot(prediction_pre, movie_genre_matrix)
     return prediction
+
+def get_prediction_names(prediction):
+    '''
+    Takes array of predicted ratings for new user
+    Returns top n number of films with highest ratings
+    Provides list with names of those movies as strings
+    '''
+
+    ...
+    return list_of_top_recs
 
 
 def deep_recommend():
