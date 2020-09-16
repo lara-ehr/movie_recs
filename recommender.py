@@ -15,6 +15,12 @@ import pandas as pd
 import numpy as np
 from sklearn.decomposition import NMF
 
+import sqlalchemy
+from sqlalchemy import create_engine
+import psycopg2
+
+
+
 
 def get_postgres_data():
     """
