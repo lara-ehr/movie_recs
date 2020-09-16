@@ -17,21 +17,46 @@ from sklearn.decomposition import NMF
 
 
 def get_postgres_data():
+    """
+    reads in movie ratings data for all users using the postgres database
+
+    Parameters: -
+    Returns: dataframe with movie IDs, ratings, user IDs
+    """
     df_ratings = pd.read_csv('placeholder/ratings.csv')
     return df_ratings
 
 
 def create_matrix(df_ratings):
+    """
+    takes in dataframe and creates a matrix of user ID X movie ID = ratings
+
+    Parameters: dataframe of ratings, user ID, movie ID
+    Returns: matrix dataframe
+    """
     matrix = df_ratings.set_index(['userId', 'movieId'])['rating'].unstack(0).T
     return matrix
 
 
-def imputation(matrix):
-    matrix.fillna(3, inplace=True)
+def imputation(matrix, nan_filling):
+    """
+    takes in matrix dataframe and value for filling in NaNs for imputation
+
+    Parameters: matrix dataframe, NaN filling value
+    Returns: imputed matrix dataframe
+    """
+    matrix.fillna(nan_filling, inplace=True)
     return matrix
 
 
 def create_nmf_model(matrix, components, max_iterations):
+    """
+    generates NMF model to recreate matrix with new features
+    and predict movies for query
+
+    Parameters: matrix dataframe, model hyperparameters
+    Returns: dictionary of five recommended movies
+    """
     model = NMF(
                 n_components=components,
                 init='random',
@@ -42,19 +67,35 @@ def create_nmf_model(matrix, components, max_iterations):
     user_genre_matrix = model.transform(matrix)
     print(f'The reconstruction error is: {model.reconstruction_err_}')
     reconstructed_matrix = np.dot(user_genre_matrix, movie_genre_matrix)
-    return reconstructed_matrix
+    return model
 
 
-def predict_movies(user_query):
-    df_ratings = get_postgres_data()
-    matrix = create_matrix(df_ratings)
-    matrix_imputed = imputation(matrix)
+def create_model():
+    """
+    runs all functions needed to create the NMF model on movie data
+
+    Parameters: -
+    Returns: NMF model
+    """
     components = 2
     max_iterations = 900
-    matrix_reconstructed = create_nmf_model(matrix_imputed, components, max_iterations)
-    # prediction = model.transform(user_query)
-    # return prediction
-    ...
+    nan_filling = 3
+    df_ratings = get_postgres_data()
+    matrix = create_matrix(df_ratings)
+    matrix_imputed = imputation(matrix, nan_filling)
+    model = create_nmf_model(matrix_imputed, components, max_iterations)
+    return model
+
+
+def create_prediction(model, user_query):
+    """
+    takes in user query and uses model to create prediction
+
+    Parameters: earlier created NMF model
+    user query as dictionary with five movie IDs and user's rating
+    """
+    prediction = model.transform(user_query)
+    return prediction
 
 
 def deep_recommend():

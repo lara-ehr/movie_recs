@@ -1,11 +1,11 @@
 from flask import Flask, render_template, request
-import recommender as rec  # import all objects from recommender.py
+import recommender as rec
 
 app = Flask(__name__)  # tell flask to make this script the center of the application
 
 
 @app.route('/index')  # whenever user visits HOSTNAME:PORT/index, this function is triggered
-@app.route('/') # you can add multiple routes
+@app.route('/')  # you can add multiple routes
 def hello():
     return render_template('index.html')
 
@@ -14,13 +14,12 @@ def hello():
 def recommender():
     user_query = dict(request.args)
     user_query_placeholder = {
-            '99': '2',
-            '4599': '4',
-            '2982': '4',
-            '3134': '5',
-            '5456': '0',
+            '1': '4',
+            '2': '3',
+            '16': '2',
+            '177593': '5',
+            '70': '0',
             }
-    # THIS WE NEED TO BUILD OURSELVES NOW:
     MOVIE_PREDICTIONS = rec.predict_movies(user_query_placeholder)
     return render_template('recommendations.html', result_html=user_query_placeholder.values())
     # passing the back-end python variable to the fron-end (HTML), i. e. the RESPONSE
