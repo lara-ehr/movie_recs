@@ -17,6 +17,10 @@ PATH_MOVIES = 'YOURPATH_movies'
 PATH_RATINGS = 'YOURPATH_ratings'
 PATH_LINKS = 'YOURPATH_links'
 
+ratings = pd.read_csv(PATH_RATINGS)
+ratings = ratings.drop('timestamp', axis = 1)
+ratings.columns = ['userid', 'movieid', 'ratings']
+
 conn = f'postgres://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}'
 
 drop_tables_query = '''
@@ -40,24 +44,19 @@ tmdbid BIGINT
 
 '''
 
-def scale(df, by):
+def scale(df):
     '''
-    Normalise on min-max scale; then bin result to return new rating in range 1-5
+    Normalise on min-max scale by user
     '''
-    groups = df.groupby(by)
-    min = groups.transform(np.min)
+    groups = df.groupby('userid')
+    mean = groups.transform(np.min)
     max = groups.transform(np.max)
     norm = (df[min.columns] - min) / (max - min)
     return norm['ratings']
 
-
-ratings = pd.read_csv(PATH_RATINGS)
-
-ratings = ratings.drop('timestamp', axis = 1)
-
-ratings.columns = ['userid', 'movieid', 'ratings']
-
 ratings['norm'] = scale(ratings, 'userid')
+
+ratings['de_meaned'] = ratings.groupby('userid').transform('mean')['ratings']
 
 def copy_table(path):
     query = '''COPY movies FROM ''' + '\'' + path + '\'' + ''' DELIMITER ',' CSV HEADER;'''
