@@ -39,13 +39,14 @@ def get_postgres_data():
     Returns: dataframe with movie IDs, ratings, user IDs; number of unique movies in database
     """
 
-    engine = create_engine(CONN, encoding = 'latin1', echo= False) # kommentar
+    engine = create_engine(CONN, encoding = 'latin1', echo= False)
     df_ratings_proxy = engine.execute(ratings_query)
     df_ratings = pd.DataFrame(df_ratings_proxy.fetchall())
     df_ratings.columns = ['index', 'userid', 'movieid', 'rating', 'demeaned']
     df_ratings = df_ratings.drop('index', axis=1)
-
-    number_of_movies = engine.execute(movie_number_query).fetchall()[0][0]
+    number_of_movies = df_ratings['movieid'].unique().shape[0]
+    # number_of_movies = engine.execute(movie_number_query).fetchall()[0][0]
+    print(number_of_movies)
     return df_ratings, number_of_movies
 
 
@@ -92,7 +93,7 @@ def create_nmf_model(matrix, components, max_iterations):
     return model, movie_genre_matrix
 
 
-def create_prediction(user_query, model, movie_genre_matrix, number_of_movies_placeholder):
+def create_prediction(user_query, model, movie_genre_matrix, number_of_movies):
     """
     takes in user query and uses model to create prediction
 
@@ -103,7 +104,7 @@ def create_prediction(user_query, model, movie_genre_matrix, number_of_movies_pl
     query_ratings = list(user_query.values())
     query_movies = list(user_query.keys())
     indices_movies = [df_movies[df_movies['title'] == movie].index[0] for movie in query_movies]
-    user = np.zeros(number_of_movies_placeholder)
+    user = np.zeros(number_of_movies)
     for index, idx_value in enumerate(indices_movies):
         user[idx_value] = query_ratings[index]
     user = [user]
@@ -130,8 +131,6 @@ def deep_recommend():
 COMPONENTS = 2
 MAX_ITERATIONS = 900
 NAN_FILLING = 0
-# NUMBER_OF_MOVIES_PLACEHOLDER = df_movies.shape[0]
-NUMBER_OF_MOVIES_PLACEHOLDER = 9724
 USER_QUERY_PLACEHOLDER = {
             'Toy Story (1995)': '4',
             'Jumanji (1995)': '3',
@@ -147,5 +146,5 @@ PREDICTION, MOVIES_TO_DROP = create_prediction(
                                         USER_QUERY_PLACEHOLDER,
                                         MODEL,
                                         MOVIE_GENRE_MATRIX,
-                                        NUMBER_OF_MOVIES_PLACEHOLDER)
+                                        NUMBER_OF_MOVIES)
 RECOMMENDATIONS = get_prediction_names(PREDICTION[0], MOVIES_TO_DROP)
