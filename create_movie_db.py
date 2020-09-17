@@ -7,7 +7,6 @@ import psycopg2
 
 from credentials import *
 
-
 # import data
 
 ratings = pd.read_csv(PATH_RATINGS)
@@ -48,10 +47,8 @@ def copy_table(table_name, path):
     Output: query string
     '''
     query = f"COPY {table_name} FROM \'{path}\' DELIMITER ',' CSV HEADER; COMMIT;"
-    # query = text(f"COPY {table_name} FROM \'{path}\' DELIMITER ',' CSV HEADER;")
     return query
 
-# engine.execute(copy_table('links', PATH_LINKS))
 
 if __name__ == '__main__':
 
