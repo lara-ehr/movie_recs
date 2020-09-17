@@ -5,6 +5,7 @@ __pycache__/
 
 # any sensitive files
 *credentials.py
+__pycache__
 
 # C extensions
 *.so
