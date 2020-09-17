@@ -23,16 +23,29 @@ import psycopg2
 
 from credentials import *
 
+CONN = f'postgres://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}'
+
+ratings_query = '''SELECT * FROM ratings;
+'''
+movie_number_query = '''SELECT COUNT(DISTINCT movieid) FROM movies;
+'''
+
+
 def get_postgres_data():
     """
-    reads in movie ratings data for all users using the postgres database
+    reads in movie and ratings data for all users using the postgres database
 
     Parameters: -
-    Returns: dataframe with movie IDs, ratings, user IDs
+    Returns: dataframe with movie IDs, ratings, user IDs; number of unique movies in database
     """
-    df_ratings = pd.read_csv('placeholder/ratings.csv')
-    df_movies = pd.read_csv('placeholder/movies.csv')
-    number_of_movies = df_movies.shape[0]
+
+    engine = create_engine(CONN, encoding = 'latin1', echo= False)
+    df_ratings_proxy = engine.execute(ratings_query)
+    df_ratings = pd.DataFrame(df_ratings_proxy.fetchall())
+    df_ratings.columns = ['index', 'userid', 'movieid', 'rating', 'demeaned']
+    df_ratings = df_ratings.drop('index', axis=1)
+ 
+    number_of_movies = engine.execute(movie_number_query).fetchall()[0][0]
     return df_ratings, number_of_movies
 
 

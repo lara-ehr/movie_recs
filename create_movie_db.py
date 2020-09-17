@@ -4,18 +4,9 @@ import sqlalchemy
 from sqlalchemy import create_engine
 import psycopg2
 
+from credentials import *
 
 # import data
-
-HOST = ''# ENTER CONNECTION LINK HERE
-PORT = '5432'
-USER = 'postgres'
-PASSWORD = 'YOURPASSWORD' # ENTER PASSWORD
-DATABASE = 'movieratings'
-
-PATH_MOVIES = 'YOURPATH_movies'
-PATH_RATINGS = 'YOURPATH_ratings'
-PATH_LINKS = 'YOURPATH_links'
 
 ratings = pd.read_csv(PATH_RATINGS)
 ratings = ratings.drop('timestamp', axis = 1)
@@ -58,10 +49,9 @@ ratings['norm'] = scale(ratings, 'userid')
 
 ratings['de_meaned'] = ratings.groupby('userid').transform('mean')['ratings']
 
-def copy_table(path):
-    query = '''COPY movies FROM ''' + '\'' + path + '\'' + ''' DELIMITER ',' CSV HEADER;'''
+def copy_table(table_name, path):
+    query = f"COPY {table_name} FROM \'{path}\' DELIMITER ',' CSV HEADER;"
     return query
-
 
 if __name__ == '__main__':
 
@@ -77,14 +67,14 @@ if __name__ == '__main__':
     print('created tables')
 
     # input movie data
-    engine.execute(copy_table(PATH_MOVIES))
+    engine.execute(copy_table('movies', PATH_MOVIES))
     print('created movies table')
 
     # input ratings data from pandas
     ratings.to_sql('ratings', engine, if_exists='append')
 
     # input links data
-    engine.execute(copy_table(PATH_LINKS))
+    engine.execute(copy_table('links', PATH_LINKS))
     print('created links table')
 
 
