@@ -3,6 +3,7 @@ import numpy as np
 import sqlalchemy
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
+
 import psycopg2
 
 from credentials import *
