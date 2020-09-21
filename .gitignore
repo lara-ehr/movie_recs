@@ -132,5 +132,5 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Placeholder data
-/placeholder
+# Resources files
+/_RES
