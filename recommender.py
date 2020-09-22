@@ -41,7 +41,6 @@ def get_postgres_data():
     engine = create_engine(CONN, encoding='latin1', echo=False)
     df_ratings_proxy = engine.execute(ratings_query)
     df_ratings = pd.DataFrame(df_ratings_proxy.fetchall())
-    df_ratings.head(50)
     df_ratings.columns = ['movieid',
                           'index',
                           'userid',
@@ -50,9 +49,7 @@ def get_postgres_data():
                           'title',
                           'genre']
     df_ratings = df_ratings.drop('index', axis=1)
-    # number_of_movies = df_ratings['movieid'].unique().shape[0]
     number_of_movies = engine.execute(movie_number_query).fetchall()[0][0]
-    number_of_movies
     return df_ratings, number_of_movies
 
 
@@ -99,12 +96,7 @@ def create_nmf_model(matrix, components, max_iterations):
     return model, movie_genre_matrix
 
 
-def create_prediction(
-                    df_ratings,
-                    user_query,
-                    model,
-                    movie_genre_matrix,
-                    number_of_movies):
+def create_prediction(df_ratings, user_query, model, movie_genre_matrix, number_of_movies):
     """
     takes in user query and uses model to create prediction
 
@@ -162,3 +154,6 @@ PREDICTION, MOVIES_TO_DROP = create_prediction(
                                         MOVIE_GENRE_MATRIX,
                                         NUMBER_OF_MOVIES)
 RECOMMENDATIONS = get_prediction_names(DF_RATINGS, PREDICTION[0], MOVIES_TO_DROP)
+
+PREDICTION.shape
+DF_RATINGS['title'].unique().shape
