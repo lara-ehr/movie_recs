@@ -137,3 +137,6 @@ dmypy.json
 /_RES
 # Placeholder data
 /placeholder
+
+# Resource data
+/_RES
