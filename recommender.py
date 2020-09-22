@@ -27,7 +27,8 @@ ratings_query = '''
                 INNER JOIN movies
                 USING (movieid);
                 '''
-movie_number_query = 'SELECT COUNT(DISTINCT movieid) FROM ratings;'
+movies_query = 'SELECT * FROM movies;'
+movie_number_query = 'SELECT COUNT(DISTINCT movieid) FROM movies;'
 
 
 def get_postgres_data():
@@ -40,7 +41,9 @@ def get_postgres_data():
     """
     engine = create_engine(CONN, encoding='latin1', echo=False)
     df_ratings_proxy = engine.execute(ratings_query)
+    df_movies_proxy = engine.execute(movies_query)
     df_ratings = pd.DataFrame(df_ratings_proxy.fetchall())
+    df_movies = pd.DataFrame(df_movies_proxy.fetchall())
     df_ratings.columns = ['movieid',
                           'index',
                           'userid',
@@ -48,9 +51,12 @@ def get_postgres_data():
                           'demeaned',
                           'title',
                           'genre']
+    df_movies.columns = ['movieid',
+                        'title',
+                        'genre']
     df_ratings = df_ratings.drop('index', axis=1)
     number_of_movies = engine.execute(movie_number_query).fetchall()[0][0]
-    return df_ratings, number_of_movies
+    return df_ratings, df_movies, number_of_movies
 
 
 def create_matrix(df_ratings):
@@ -114,7 +120,7 @@ def create_prediction(df_ratings, user_query, model, movie_genre_matrix, number_
     user = [user]
     user_profile = model.transform(user)
     prediction = np.dot(user_profile, movie_genre_matrix)
-    return prediction, query_movies
+    return prediction, query_movies, indices_movies
 
 
 def get_prediction_names(df_ratings, prediction, movies_to_drop):
@@ -139,20 +145,25 @@ USER_QUERY_PLACEHOLDER = {
             'Three Billboards Outside Ebbing, Missouri (2017)': '5',
             'From Dusk Till Dawn (1996)': '0',
             }
-DF_RATINGS, NUMBER_OF_MOVIES = get_postgres_data()
+DF_RATINGS, DF_MOVIES, NUMBER_OF_MOVIES = get_postgres_data()
 NUMBER_OF_MOVIES
 MATRIX = create_matrix(DF_RATINGS)
+MATRIX
 MATRIX_IMPUTED = imputation(MATRIX, NAN_FILLING)
+MATRIX_IMPUTED
 MODEL, MOVIE_GENRE_MATRIX = create_nmf_model(
                                             MATRIX_IMPUTED,
                                             COMPONENTS,
                                             MAX_ITERATIONS)
-PREDICTION, MOVIES_TO_DROP = create_prediction(
+PREDICTION, MOVIES_TO_DROP, i = create_prediction(
                                         DF_RATINGS,
                                         USER_QUERY_PLACEHOLDER,
                                         MODEL,
                                         MOVIE_GENRE_MATRIX,
                                         NUMBER_OF_MOVIES)
+DF_RATINGS.shape
+MATRIX_IMPUTED.shape
+i
 RECOMMENDATIONS = get_prediction_names(DF_RATINGS, PREDICTION[0], MOVIES_TO_DROP)
 
 PREDICTION.shape
