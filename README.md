@@ -1,5 +1,5 @@
 # Movie Recommender System
-Provides personalised movie recommendations.
+Provides personalised movie recommendations. Collaboration with Felix Grossmann (snaylix).
 
 ## USER STORY
 
